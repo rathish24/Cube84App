@@ -27,7 +27,6 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
     };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,16 +65,17 @@ public class MainActivity extends AppCompatActivity {
             webview.restoreState(savedInstanceState);
         }
         verifyStoragePermissions(this);
-
         init();
-         process();
+        process();
     }
+
     private void init() {
         webview = (WebView) findViewById(R.id.webView);
         logo = (ImageView) findViewById(R.id.imageView);
         bar = (ProgressBar) findViewById(R.id.progressBar);
         version = (TextView) findViewById(R.id.textView);
     }
+
     private void process() {
 
         WebSettings websettings = webview.getSettings();
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         webview.setHorizontalScrollBarEnabled(false);
         webview.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         webview.setBackgroundColor(128);
-     //   webview.getSettings().setBuiltInZoomControls(true);
+        //   webview.getSettings().setBuiltInZoomControls(true);
         webview.getSettings().setPluginState(WebSettings.PluginState.ON);
         webview.getSettings().setAllowFileAccess(true);
         webview.getSettings().setSupportZoom(true);
@@ -109,11 +110,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     public class CustomChromeClient extends WebChromeClient {
         public boolean onShowFileChooser(
                 WebView webView, ValueCallback<Uri[]> filePathCallback,
                 WebChromeClient.FileChooserParams fileChooserParams) {
-            if(mFilePathCallback != null) {
+            if (mFilePathCallback != null) {
                 mFilePathCallback.onReceiveValue(null);
             }
             mFilePathCallback = filePathCallback;
@@ -139,28 +141,24 @@ public class MainActivity extends AppCompatActivity {
                     takePictureIntent = null;
                 }
             }
-
             Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
             contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
             contentSelectionIntent.setType("image/*");
-
             Intent[] intentArray;
-            if(takePictureIntent != null) {
+            if (takePictureIntent != null) {
                 intentArray = new Intent[]{takePictureIntent};
             } else {
                 intentArray = new Intent[2];
             }
-
             Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
             chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
             chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
-
             startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
-
             return true;
         }
     }
+
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have read or write permission
         int writePermission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -180,18 +178,16 @@ public class MainActivity extends AppCompatActivity {
 
     public class CustomWebClient extends WebViewClient {
         @Override
-        public boolean shouldOverrideUrlLoading(WebView webview, String url){
+        public boolean shouldOverrideUrlLoading(WebView webview, String url) {
             webview.loadUrl(url);
             return true;
         }
-
         @Override
         public void onReceivedError(WebView view, int errorCode,
                                     String description, String failingUrl) {
             // TODO Auto-generated method stub
-          //  view.loadUrl("file:///android_asset/noconnection.html");
+            //  view.loadUrl("file:///android_asset/noconnection.html");
         }
-
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             visible();
@@ -201,18 +197,14 @@ public class MainActivity extends AppCompatActivity {
         public void onPageFinished(WebView view, String url) {
             unvisible();
         }
-
     }
-
     private void unvisible() {
-
         webview.setVisibility(View.VISIBLE);
         logo.setVisibility(View.GONE);
         bar.setVisibility(View.GONE);
         version.setVisibility(View.GONE);
     }
     private void visible() {
-
         webview.setVisibility(View.GONE);
         logo.setVisibility(View.VISIBLE);
         bar.setVisibility(View.VISIBLE);
@@ -232,46 +224,30 @@ public class MainActivity extends AppCompatActivity {
         );
         return imageFile;
     }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    public void onActivityResult (int requestCode, int resultCode, Intent data) {
-        if(requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
 
-//        Uri[] results = null;
-//
-//        // Check that the response is a good one
-//        if(resultCode == Activity.RESULT_OK) {
-//            if(data == null) {
-//                // If there is not data, then we may have taken a photo
-//                if(mCameraPhotoPath != null) {
-//                    results = new Uri[]{Uri.parse(mCameraPhotoPath)};
-//                }
-//            } else {
-//                String dataString = data.getDataString();
-//                if (dataString != null) {
-//                    results = new Uri[]{Uri.parse(dataString)};
-//                }
-//            }
-//        }
-
         try {
-            String file_path = mCameraPhotoPath.replace("file:","");
+            String file_path = mCameraPhotoPath.replace("file:", "");
             File file = new File(file_path);
             size = file.length();
 
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e("Error!", "Error while opening image file" + e.getLocalizedMessage());
         }
 
         if (data != null || mCameraPhotoPath != null) {
-            Integer count = 0; //fix fby https://github.com/nnian
+            Integer count = 0;
             ClipData images = null;
             try {
                 images = data.getClipData();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 Log.e("Error!", e.getLocalizedMessage());
             }
 
@@ -297,16 +273,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-
             mFilePathCallback.onReceiveValue(results);
             mFilePathCallback = null;
             return;
         }
-
-//        mFilePathCallback.onReceiveValue(results);
-//        mFilePathCallback = null;
- //       return;
     }
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Check if the key event was the Back button and if there's history
         if ((keyCode == KeyEvent.KEYCODE_BACK) && webview.canGoBack()) {
@@ -315,7 +287,6 @@ public class MainActivity extends AppCompatActivity {
         }
         // If it wasn't the Back key or there's no web page history, bubble up to the default
         // system behavior (probably exit the activity)
-
         return super.onKeyDown(keyCode, event);
     }
 }
