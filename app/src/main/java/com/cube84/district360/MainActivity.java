@@ -3,7 +3,6 @@ package com.cube84.district360;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.ClipData;
@@ -27,6 +26,8 @@ import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView logo;
     ProgressBar bar;
     TextView version;
-    private String url = "https://bid-support-developer-edition.na122.force.com/";
+    private String url = "https://cube84dev-tacomabia.cs91.force.com/case/";
     private static final String TAG = MainActivity.class.getSimpleName();
     private long size = 0;
 
@@ -78,27 +79,30 @@ public class MainActivity extends AppCompatActivity {
 
     private void process() {
 
-        WebSettings websettings = webview.getSettings();
-        websettings.setJavaScriptEnabled(true);
-        websettings.setSaveFormData(false);
-        websettings.setSavePassword(false);
-//if SDK version is greater of 19 then activate hardware acceleration otherwise activate software acceleration
-        if (Build.VERSION.SDK_INT >= 19) {
-            webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else if (Build.VERSION.SDK_INT >= 11 && Build.VERSION.SDK_INT < 19) {
-            webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
-        webview.loadUrl(url);
-        webview.setHorizontalScrollBarEnabled(false);
-        webview.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
-        webview.setBackgroundColor(128);
-        //   webview.getSettings().setBuiltInZoomControls(true);
-        webview.getSettings().setPluginState(WebSettings.PluginState.ON);
-        webview.getSettings().setAllowFileAccess(true);
-        webview.getSettings().setSupportZoom(true);
-        webview.setWebViewClient(new CustomWebClient());
-        webview.setWebChromeClient(new CustomChromeClient());
 
+            WebSettings websettings = webview.getSettings();
+            websettings.setJavaScriptEnabled(true);
+            websettings.setSaveFormData(false);
+            websettings.setSavePassword(false);
+//if SDK version is greater of 19 then activate hardware acceleration otherwise activate software acceleration
+            if (Build.VERSION.SDK_INT >= 19) {
+                webview.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            } else if (Build.VERSION.SDK_INT >= 11 && Build.VERSION.SDK_INT < 19) {
+                webview.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }
+
+            webview.setHorizontalScrollBarEnabled(false);
+            webview.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+            webview.setBackgroundColor(128);
+            //   webview.getSettings().setBuiltInZoomControls(true);
+            webview.getSettings().setPluginState(WebSettings.PluginState.ON);
+            webview.getSettings().setAllowFileAccess(true);
+            webview.getSettings().setSupportZoom(true);
+            webview.setWebViewClient(new CustomWebClient());
+            webview.loadUrl(url);
+
+
+        webview.setWebChromeClient(new CustomChromeClient());
         webview.setDownloadListener(new DownloadListener() {
             public void onDownloadStart(String url, String userAgent,
                                         String contentDisposition, String mimetype,
@@ -187,6 +191,16 @@ public class MainActivity extends AppCompatActivity {
                                     String description, String failingUrl) {
             // TODO Auto-generated method stub
             //  view.loadUrl("file:///android_asset/noconnection.html");
+            try {
+                view.stopLoading();
+            } catch (Exception e) {
+
+            }
+            if (view.canGoBack()) {
+                view.goBack();
+            }
+
+            Toast.makeText(getApplicationContext(), "No Internet!", Toast.LENGTH_SHORT).show();
         }
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
